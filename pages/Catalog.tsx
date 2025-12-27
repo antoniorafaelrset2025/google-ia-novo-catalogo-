@@ -56,16 +56,14 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
   }, []);
 
   const isValidPrice = (price: string) => {
-    if (!price) return false;
+    if (!price || typeof price !== 'string') return false;
     const cleanPrice = price.trim().replace(',', '.');
     const numPrice = parseFloat(cleanPrice);
     return !isNaN(numPrice) && numPrice > 0;
   };
 
   const addToCart = (product: Product) => {
-    if (!isValidPrice(product.price)) {
-      return;
-    }
+    if (!isValidPrice(product.price)) return;
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
@@ -94,9 +92,9 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
     e.preventDefault();
     if (!customerName.trim()) return alert("Por favor, informe seu nome.");
 
-    const itemsText = cart.map(item => `- ${item.quantity}x ${item.name} (R$ ${item.price})`).join('\n');
+    const itemsText = cart.map(item => `• *${item.quantity}x* ${item.name} (R$ ${item.price})`).join('\n');
     const totalFormatted = cartTotal.toFixed(2).replace('.', ',');
-    const message = `Olá MR Bebidas! Gostaria de fazer um pedido:\n\n*Cliente:* ${customerName}\n\n*Itens:*\n${itemsText}\n\n*Total:* R$ ${totalFormatted}`;
+    const message = `Olá MR Bebidas! Gostaria de fazer um pedido:\n\n👤 *Cliente:* ${customerName}\n\n🛒 *Itens:*\n${itemsText}\n\n💰 *Total:* R$ ${totalFormatted}`;
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
@@ -163,11 +161,11 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
           <svg className="absolute left-4 top-4 h-5 w-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </div>
 
-        {/* Categorias agora usam flex-wrap para mostrar todas sem rolagem horizontal */}
-        <div className="flex flex-wrap gap-2 pb-4 select-none">
+        {/* Layout de Categorias sem rolagem, grade robusta para cliques fáceis */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap gap-2 pb-4 select-none">
           <button 
             onClick={() => setSelectedCategoryId(null)}
-            className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${selectedCategoryId === null ? 'bg-yellow-500 text-slate-950 border-yellow-500' : 'bg-slate-900/60 text-slate-400 border-slate-800/50 hover:border-slate-700'}`}
+            className={`px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border text-center ${selectedCategoryId === null ? 'bg-yellow-500 text-slate-950 border-yellow-500 shadow-lg shadow-yellow-500/20' : 'bg-slate-900/60 text-slate-400 border-slate-800/50 hover:border-slate-700'}`}
           >
             TODOS
           </button>
@@ -175,7 +173,7 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
             <button 
               key={cat.id}
               onClick={() => setSelectedCategoryId(cat.id)}
-              className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${selectedCategoryId === cat.id ? 'bg-yellow-500 text-slate-950 border-yellow-500' : 'bg-slate-900/60 text-slate-400 border-slate-800/50 hover:border-slate-700'}`}
+              className={`px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border text-center ${selectedCategoryId === cat.id ? 'bg-yellow-500 text-slate-950 border-yellow-500 shadow-lg shadow-yellow-500/20' : 'bg-slate-900/60 text-slate-400 border-slate-800/50 hover:border-slate-700'}`}
             >
               {cat.name}
             </button>
@@ -190,7 +188,7 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
       ) : (
         <div className="space-y-10 flex-grow pb-32 mt-4 animate-fadeIn">
           {categoriesToShow.length === 0 ? (
-            <div className="text-center py-20">
+            <div className="text-center py-20 bg-slate-900/20 rounded-[3rem] border border-dashed border-slate-800">
               <p className="text-[10px] text-slate-600 uppercase font-black tracking-widest">Nenhum item encontrado.</p>
             </div>
           ) : (
@@ -204,17 +202,17 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
                   {filteredProducts.filter(p => p.category_id === cat.id).map(product => {
                     const canBuy = isValidPrice(product.price);
                     return (
-                      <div key={product.id} className="bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60 flex justify-between items-center hover:border-slate-700 transition-colors">
+                      <div key={product.id} className="bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60 flex justify-between items-center hover:border-slate-700 transition-colors group">
                         <div className="flex-grow pr-4">
-                          <h3 className="font-bold text-slate-200 uppercase text-xs tracking-tight">{product.name}</h3>
+                          <h3 className="font-bold text-slate-200 uppercase text-xs tracking-tight group-hover:text-white transition-colors">{product.name}</h3>
                           <p className="text-[11px] text-slate-500 font-bold mt-1">
-                            {canBuy ? `R$ ${product.price}` : 'Consulte Valor'}
+                            {canBuy ? `R$ ${product.price}` : <span className="text-slate-700 italic">Consulte Valor</span>}
                           </p>
                         </div>
                         <button 
                           onClick={() => canBuy && addToCart(product)} 
                           disabled={!canBuy}
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xl transition-all shadow-lg ${canBuy ? 'bg-yellow-500 text-slate-950 hover:scale-105 active:scale-90 shadow-yellow-500/5' : 'bg-slate-800 text-slate-600 cursor-not-allowed shadow-none opacity-50'}`}
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl transition-all shadow-lg ${canBuy ? 'bg-yellow-500 text-slate-950 hover:scale-105 active:scale-95 shadow-yellow-500/5' : 'bg-slate-800 text-slate-600 cursor-not-allowed shadow-none opacity-50'}`}
                         >
                           +
                         </button>
@@ -281,14 +279,14 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
               </div>
               
               {!showCheckoutForm ? (
-                <button onClick={() => setShowCheckoutForm(true)} className="w-full bg-yellow-500 text-slate-950 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-yellow-500/10">Prosseguir</button>
+                <button onClick={() => setShowCheckoutForm(true)} className="w-full bg-yellow-500 text-slate-950 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-yellow-500/10 hover:bg-yellow-400 transition-colors">Prosseguir para Nome</button>
               ) : (
                 <form onSubmit={handleCheckout} className="space-y-4 animate-fadeIn">
-                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl focus-within:border-yellow-500 transition-colors">
                     <label className="text-[9px] font-black uppercase text-slate-600 block mb-1">Seu Nome para Identificação</label>
-                    <input autoFocus required type="text" placeholder="Nome do Cliente" className="w-full bg-transparent text-white font-black outline-none text-sm placeholder:text-slate-800" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                    <input autoFocus required type="text" placeholder="Como podemos te chamar?" className="w-full bg-transparent text-white font-black outline-none text-sm placeholder:text-slate-800" value={customerName} onChange={e => setCustomerName(e.target.value)} />
                   </div>
-                  <button type="submit" className="w-full bg-green-500 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-green-500/10">
+                  <button type="submit" className="w-full bg-green-500 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-green-500/10 hover:bg-green-400 transition-colors">
                     Finalizar no WhatsApp
                   </button>
                 </form>

@@ -43,8 +43,8 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950">
       <div className="w-full max-w-sm">
-        <button onClick={onBack} className="mb-8 flex items-center text-slate-500 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors">
-          <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
+        <button onClick={onBack} className="mb-8 flex items-center text-slate-500 hover:text-white uppercase text-[10px] font-black tracking-widest transition-colors group">
+          <svg className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" /></svg>
           Voltar ao Catálogo
         </button>
 
@@ -60,9 +60,12 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Usuário</label>
+              <label htmlFor="username" className="text-[10px] font-black uppercase text-slate-500 ml-1">Usuário</label>
               <input 
+                id="username"
+                name="username"
                 type="text" 
+                autoComplete="username"
                 required 
                 className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 text-sm outline-none text-white focus:ring-2 focus:ring-yellow-500 transition-all font-bold" 
                 placeholder="Ex: admin" 
@@ -72,10 +75,13 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
             </div>
             
             <div className="space-y-1 relative">
-              <label className="text-[10px] font-black uppercase text-slate-500 ml-1">Senha</label>
+              <label htmlFor="password" className="text-[10px] font-black uppercase text-slate-500 ml-1">Senha</label>
               <div className="relative">
                 <input 
+                  id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"} 
+                  autoComplete="current-password"
                   required 
                   className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 pr-12 text-sm outline-none text-white focus:ring-2 focus:ring-yellow-500 transition-all font-bold" 
                   placeholder="********" 
@@ -85,7 +91,8 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-yellow-500 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-yellow-500 transition-colors p-1"
+                  aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
                 >
                   {showPassword ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
@@ -102,7 +109,7 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
                   type="checkbox" 
                   checked={rememberMe} 
                   onChange={e => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500 focus:ring-offset-slate-900"
+                  className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500 focus:ring-offset-slate-900 cursor-pointer"
                 />
                 <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-slate-300 transition-colors">Lembrar de mim</span>
               </label>
@@ -110,12 +117,12 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
 
             {error && (
               <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-center animate-fadeIn">
-                <p className="text-red-500 text-[9px] font-black uppercase">{error}</p>
+                <p className="text-red-500 text-[9px] font-black uppercase tracking-widest">{error}</p>
               </div>
             )}
 
             <button disabled={loading} className="w-full bg-yellow-500 text-slate-950 font-black py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-yellow-400 active:scale-95 transition-all disabled:opacity-50 mt-2 shadow-lg shadow-yellow-500/10">
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? 'Validando...' : 'Entrar'}
             </button>
           </form>
         </div>
