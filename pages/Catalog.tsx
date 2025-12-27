@@ -96,7 +96,7 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
 
     const itemsText = cart.map(item => `- ${item.quantity}x ${item.name} (R$ ${item.price})`).join('\n');
     const totalFormatted = cartTotal.toFixed(2).replace('.', ',');
-    const message = `Olá! Gostaria de fazer um pedido:\n\n*Cliente:* ${customerName}\n\n*Itens:*\n${itemsText}\n\n*Total:* R$ ${totalFormatted}`;
+    const message = `Olá MR Bebidas! Gostaria de fazer um pedido:\n\n*Cliente:* ${customerName}\n\n*Itens:*\n${itemsText}\n\n*Total:* R$ ${totalFormatted}`;
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
@@ -163,7 +163,8 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
           <svg className="absolute left-4 top-4 h-5 w-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </div>
 
-        <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar select-none">
+        {/* Categorias agora usam flex-wrap para mostrar todas sem rolagem horizontal */}
+        <div className="flex flex-wrap gap-2 pb-4 select-none">
           <button 
             onClick={() => setSelectedCategoryId(null)}
             className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap border ${selectedCategoryId === null ? 'bg-yellow-500 text-slate-950 border-yellow-500' : 'bg-slate-900/60 text-slate-400 border-slate-800/50 hover:border-slate-700'}`}
