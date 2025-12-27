@@ -42,7 +42,7 @@ export const getProducts = async () => {
   }
 };
 
-// Configurações (WhatsApp, etc)
+// Configurações (WhatsApp, logo_url, etc)
 export const getSetting = async (key: string) => {
   try {
     const { data, error } = await supabase
@@ -68,6 +68,30 @@ export const updateSetting = async (key: string, value: string) => {
     if (error) throw error;
   } catch (err: any) {
     console.error("Erro ao atualizar configuração:", err);
+    throw err;
+  }
+};
+
+// Upload de Logo
+export const uploadLogo = async (file: File) => {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `logo_${Math.random()}.${fileExt}`;
+    const filePath = `assets/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('assets')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage
+      .from('assets')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  } catch (err) {
+    console.error("Erro no upload:", err);
     throw err;
   }
 };

@@ -11,8 +11,8 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [logoUrl, setLogoUrl] = useState("https://vytaqltyavifnddqrrfo.supabase.co/storage/v1/object/public/assets/logo_mr.jpg");
   const [loading, setLoading] = useState(true);
-  const [dbMissing, setDbMissing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   
@@ -21,27 +21,19 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
   const [customerName, setCustomerName] = useState('');
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
 
-  // Link da logo oficial
-  const logoUrl = "https://vytaqltyavifnddqrrfo.supabase.co/storage/v1/object/public/assets/logo_mr.jpg"; 
-
   const fetchData = async () => {
     try {
-      const [cats, prods, wa] = await Promise.all([
+      const [cats, prods, wa, logo] = await Promise.all([
         getCategories(), 
         getProducts(),
-        getSetting('whatsapp_number')
+        getSetting('whatsapp_number'),
+        getSetting('logo_url')
       ]);
 
-      if (cats === "__DB_MISSING__" || prods === "__DB_MISSING__" || wa === "__DB_MISSING__") {
-        setDbMissing(true);
-        setLoading(false);
-        return;
-      }
-
-      setCategories(cats || []);
-      setProducts(prods || []);
-      setWhatsappNumber(wa || '5511999999999');
-      setDbMissing(false);
+      setCategories(cats === "__DB_MISSING__" ? [] : (cats || []));
+      setProducts(prods === "__DB_MISSING__" ? [] : (prods || []));
+      setWhatsappNumber(wa === "__DB_MISSING__" ? '5511999999999' : (wa || '5511999999999'));
+      if (logo && logo !== "__DB_MISSING__") setLogoUrl(logo);
     } catch (error: any) {
       console.error("Erro ao carregar catálogo:", error);
     } finally {
@@ -130,23 +122,23 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
 
   return (
     <div className="max-w-7xl mx-auto min-h-screen flex flex-col relative bg-[#020617]">
-      {/* Header Centralizado com Logo Oficial */}
       <header className="flex flex-col items-center pt-10 pb-6 px-6">
         <div className="relative">
           <div className="absolute -inset-6 bg-yellow-500 rounded-full blur-3xl opacity-20"></div>
           <div className="relative w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-yellow-500 overflow-hidden shadow-2xl bg-slate-900 flex items-center justify-center">
              <img 
                src={logoUrl} 
-               alt="MR Bebidas" 
+               alt="Logo" 
                className="w-full h-full object-cover block"
                onError={(e) => {
-                 (e.target as HTMLImageElement).style.display = 'none';
+                 (e.target as HTMLImageElement).src = "https://vytaqltyavifnddqrrfo.supabase.co/storage/v1/object/public/assets/logo_mr.jpg";
                }}
              />
-             <span className="text-yellow-500 font-black text-4xl italic absolute z-0">MR</span>
           </div>
         </div>
-        <h1 className="mt-8 text-4xl md:text-7xl font-black text-white text-center tracking-tighter uppercase italic leading-none">MR. BEBIDAS</h1>
+        <h1 className="mt-8 text-3xl md:text-5xl font-black text-white text-center tracking-tighter uppercase italic leading-none">
+          MR BEBIDAS<br/>DISTRIBUIDORA
+        </h1>
         <div className="bg-yellow-500 text-slate-900 text-[10px] md:text-[12px] font-black px-5 py-2 rounded-full mt-4 tracking-[0.3em] uppercase italic shadow-xl">CATÁLOGO OFICIAL</div>
         
         <button onClick={onLoginClick} className="mt-8 text-[11px] text-slate-700 hover:text-yellow-500 transition-colors flex items-center gap-2 uppercase font-black tracking-widest">
@@ -155,12 +147,11 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
         </button>
       </header>
 
-      {/* Busca e Filtros */}
       <div className="sticky top-0 z-40 bg-[#020617]/95 backdrop-blur-xl px-4 py-6 md:px-6 border-b border-slate-900/50">
         <div className="relative mb-6 max-w-2xl mx-auto">
           <input 
             type="text" 
-            placeholder="O que você precisa?" 
+            placeholder="Procure sua bebida..." 
             className="w-full bg-slate-950 border-2 border-slate-800 rounded-2xl px-6 py-4 pl-14 focus:outline-none focus:border-yellow-500 transition-all text-white placeholder:text-slate-700 shadow-inner" 
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
@@ -233,7 +224,6 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
         </div>
       )}
 
-      {/* Rodapé e Carrinho Omitidos para brevidade, mas mantidos na lógica interna */}
       {cart.length > 0 && (
         <div className="fixed bottom-10 left-0 right-0 px-8 z-40">
           <button onClick={() => setIsCartOpen(true)} className="max-w-xl mx-auto w-full bg-yellow-500 text-slate-950 py-5 px-10 rounded-3xl shadow-[0_20px_50px_rgba(234,179,8,0.3)] flex justify-between items-center transform transition-all active:scale-95 border-4 border-slate-950">
@@ -242,6 +232,63 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
           </button>
         </div>
       )}
+
+      {isCartOpen && (
+        <div className="fixed inset-0 bg-black/98 backdrop-blur-3xl z-50 flex flex-col animate-fadeIn">
+          <div className="max-w-2xl mx-auto w-full h-full flex flex-col p-8 md:p-14">
+            <div className="flex justify-between items-center mb-16">
+              <div>
+                <h2 className="text-5xl font-black text-white uppercase italic tracking-tighter">Pedido</h2>
+                <div className="h-2 w-24 bg-yellow-500 rounded-full mt-4"></div>
+              </div>
+              <button onClick={() => { setIsCartOpen(false); setShowCheckoutForm(false); }} className="bg-slate-900 text-slate-400 p-5 rounded-full hover:text-white transition-all">
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            <div className="flex-grow overflow-y-auto space-y-6 custom-scrollbar pr-4">
+              {cart.map(item => (
+                <div key={item.id} className="bg-slate-900/50 p-7 md:p-10 rounded-[3rem] flex justify-between items-center border-2 border-slate-800/50">
+                  <div className="flex-grow mr-4">
+                    <h4 className="font-black text-xl text-white uppercase tracking-tight">{item.name}</h4>
+                    <p className="text-lg text-yellow-500 font-bold mt-2">{formatPrice(item.price)}</p>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <button onClick={() => updateQuantity(item.id, -1)} className="w-12 h-12 bg-slate-800 text-white rounded-2xl flex items-center justify-center font-black text-2xl">-</button>
+                    <span className="text-white font-black text-2xl min-w-[30px] text-center">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.id, 1)} className="w-12 h-12 bg-yellow-500 text-slate-950 rounded-2xl flex items-center justify-center font-black text-2xl">+</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-12 mt-10 border-t-4 border-slate-900">
+              <div className="flex justify-between items-center mb-12">
+                <span className="text-slate-600 font-black uppercase text-sm tracking-[0.3em]">Total</span>
+                <span className="text-white text-5xl md:text-7xl font-black italic tracking-tighter">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
+              </div>
+              
+              {!showCheckoutForm ? (
+                <button onClick={() => setShowCheckoutForm(true)} className="w-full bg-yellow-500 text-slate-950 py-7 rounded-[2rem] font-black uppercase text-lg tracking-widest shadow-3xl">Prosseguir</button>
+              ) : (
+                <form onSubmit={handleCheckout} className="space-y-8 animate-fadeIn">
+                  <div className="bg-slate-900 border-2 border-slate-800 p-8 rounded-[2.5rem]">
+                    <label className="text-xs font-black uppercase text-slate-500 block mb-3 tracking-widest">Seu Nome</label>
+                    <input autoFocus required type="text" placeholder="Como te chamamos?" className="w-full bg-transparent text-white font-black outline-none text-3xl placeholder:text-slate-800 uppercase" value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                  </div>
+                  <button type="submit" className="w-full bg-green-500 text-white py-8 rounded-[2rem] font-black uppercase text-lg tracking-widest flex items-center justify-center gap-4 hover:bg-green-400 transition-all">
+                    Finalizar no WhatsApp
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <footer className="mt-48 py-20 border-t border-slate-900/50 text-center">
+        <p className="text-slate-800 text-[12px] font-black tracking-[0.6em] uppercase italic">QUALIDADE PREMIUM • MR BEBIDAS DISTRIBUIDORA © 2025</p>
+      </footer>
     </div>
   );
 };

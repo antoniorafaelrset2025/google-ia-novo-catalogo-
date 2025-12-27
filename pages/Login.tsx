@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { supabase } from '../supabase';
+import React, { useState, useEffect } from 'react';
+import { supabase, getSetting } from '../supabase';
 
 interface LoginProps {
   onBack: () => void;
@@ -12,8 +12,13 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("https://vytaqltyavifnddqrrfo.supabase.co/storage/v1/object/public/assets/logo_mr.jpg");
 
-  const logoUrl = "https://vytaqltyavifnddqrrfo.supabase.co/storage/v1/object/public/assets/logo_mr.jpg";
+  useEffect(() => {
+    getSetting('logo_url').then(url => {
+      if (url && url !== "__DB_MISSING__") setLogoUrl(url);
+    });
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +60,7 @@ const Login: React.FC<LoginProps> = ({ onBack, onSuccess }) => {
             <div className="w-24 h-24 rounded-full border-2 border-yellow-500 overflow-hidden mx-auto mb-6 bg-slate-950 flex items-center justify-center">
               <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-2xl font-black text-white uppercase italic tracking-tighter">Área Restrita</h1>
+            <h1 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-tight">MR BEBIDAS<br/>DISTRIBUIDORA</h1>
           </div>
           
           <form onSubmit={handleLogin} className="space-y-6">
