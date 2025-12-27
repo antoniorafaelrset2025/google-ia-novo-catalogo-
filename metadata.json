@@ -1,0 +1,5 @@
+{
+  "name": "Mr. Bebidas Catálogo",
+  "description": "Um catálogo digital profissional para bebidas com gerenciamento de preços e categorias via Supabase.",
+  "requestFramePermissions": []
+}
