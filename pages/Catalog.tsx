@@ -196,7 +196,7 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
         <div className="px-4 md:px-6 py-10 space-y-16 flex-grow pb-48 animate-fadeIn">
           {categoriesToShow.map(cat => (
             <section key={cat.id}>
-              <div className="flex items-center gap-5 mb-8">
+              <div className="flex items-center gap-5 mb-8 px-2">
                 <h2 className="text-xl md:text-3xl font-black text-white uppercase italic tracking-tighter whitespace-nowrap">{cat.name}</h2>
                 <div className="flex-grow h-[2px] bg-gradient-to-r from-slate-900 to-transparent"></div>
               </div>
@@ -204,24 +204,24 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
                 {filteredProducts.filter(p => p.category_id === cat.id).map(product => {
                   const buyable = isValidPrice(product.price);
                   return (
-                    <div key={product.id} className="bg-slate-900/20 p-6 md:p-8 rounded-[2.5rem] border border-slate-900 flex flex-col justify-between hover:border-yellow-500/40 hover:bg-slate-900/40 transition-all shadow-2xl group relative overflow-hidden">
+                    <div key={product.id} className="bg-slate-900/20 p-7 md:p-8 rounded-[2.5rem] border border-slate-900 flex flex-col justify-between hover:border-yellow-500/40 hover:bg-slate-900/40 transition-all shadow-2xl group relative overflow-hidden">
                       <div className="mb-6">
-                        <h3 className="font-black text-slate-100 uppercase text-sm md:text-lg tracking-tight leading-tight group-hover:text-yellow-500 transition-colors">
+                        <h3 className="font-black text-slate-100 uppercase text-xl md:text-2xl tracking-tight leading-tight group-hover:text-yellow-500 transition-colors">
                           {product.name}
                         </h3>
                       </div>
                       
                       <div className="flex items-center justify-between mt-auto">
                         <div className="flex flex-col">
-                          <span className="text-[10px] text-slate-600 font-bold uppercase mb-1 tracking-widest">Preço</span>
-                          <span className={`text-xl md:text-2xl font-black italic tracking-tighter ${buyable ? 'text-white' : 'text-slate-800 text-sm'}`}>
+                          <span className="text-[10px] text-slate-600 font-bold uppercase mb-1 tracking-widest">Valor</span>
+                          <span className={`text-3xl md:text-4xl font-black italic tracking-tighter ${buyable ? 'text-white' : 'text-slate-800 text-sm'}`}>
                             {formatPrice(product.price)}
                           </span>
                         </div>
                         <button 
                           onClick={() => buyable && addToCart(product)} 
                           disabled={!buyable}
-                          className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center font-black text-2xl md:text-3xl transition-all shadow-2xl ${buyable ? 'bg-yellow-500 text-slate-950 shadow-yellow-500/20 hover:scale-110 active:scale-95' : 'bg-slate-950 text-slate-800 cursor-not-allowed opacity-20'}`}
+                          className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center font-black text-3xl md:text-4xl transition-all shadow-2xl ${buyable ? 'bg-yellow-500 text-slate-950 shadow-yellow-500/20 hover:scale-110 active:scale-95' : 'bg-slate-950 text-slate-800 cursor-not-allowed opacity-20'}`}
                         >
                           {buyable ? '+' : '×'}
                         </button>
@@ -250,7 +250,7 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
             </div>
             <div className="flex items-center gap-2">
                <span className="text-[10px] font-bold uppercase text-slate-800/60">Total</span>
-               <span className="font-black text-xl md:text-2xl italic">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
+               <span className="font-black text-2xl md:text-3xl italic">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
             </div>
           </button>
         </div>
@@ -274,8 +274,8 @@ const Catalog: React.FC<CatalogProps> = ({ onLoginClick }) => {
               {cart.map(item => (
                 <div key={item.id} className="bg-slate-900/40 p-6 md:p-8 rounded-[2rem] flex justify-between items-center border border-slate-800">
                   <div className="flex-grow">
-                    <h4 className="font-black text-sm md:text-base text-white uppercase tracking-tight">{item.name}</h4>
-                    <p className="text-xs md:text-sm text-yellow-500 font-bold mt-1">{formatPrice(item.price)}</p>
+                    <h4 className="font-black text-lg text-white uppercase tracking-tight">{item.name}</h4>
+                    <p className="text-sm text-yellow-500 font-bold mt-1">{formatPrice(item.price)}</p>
                   </div>
                   <div className="flex items-center gap-5">
                     <button onClick={() => updateQuantity(item.id, -1)} className="w-10 h-10 bg-slate-800 text-white rounded-xl flex items-center justify-center font-black">-</button>
